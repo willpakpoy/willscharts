@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: protonmail-bridge
+  name: protonmail-bridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: protonmail-bridge
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: protonmail-bridge
+    spec:
+      nodeName: wsrv-tx-gpu-alfred
+      containers:
+        - image: shenxn/protonmail-bridge
+          name: protonmail-bridge
+          command: ["/root/new-entrypoint.sh"]
+          ports:
+            - containerPort: 25
+              protocol: TCP
+            - containerPort: 143
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /root
+              name: protonmail
+      restartPolicy: Always
+      volumes:
+        - name: protonmail
+          persistentVolumeClaim:
+            claimName: protonmail
