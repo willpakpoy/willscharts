@@ -4,11 +4,13 @@ metadata:
   annotations:
     kompose.cmd: kompose convert
     kompose.version: 1.38.0 (HEAD)
+    external-dns.alpha.kubernetes.io/hostname: bridgemail.private.willpakpoy.com
   labels:
     io.kompose.service: protonmail-bridge
   name: protonmail-bridge
 spec:
   type: LoadBalancer
+  loadBalancerIP: 10.40.97.10
   ports:
     - name: "1025"
       port: 1025

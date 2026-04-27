@@ -35,8 +35,20 @@ spec:
           volumeMounts:
             - mountPath: /root
               name: protonmail
+            - name: mail-cert
+              mountPath: /root/.config/protonmail/bridge/cert.pem
+              subPath: tls.crt
+              readOnly: true
+
+            - name: mail-cert
+              mountPath: /root/.config/protonmail/bridge/key.pem
+              subPath: tls.key
+              readOnly: true
       restartPolicy: Always
       volumes:
+        - name: mail-cert
+          secret:
+            secretName: mail-cert
         - name: protonmail
           persistentVolumeClaim:
             claimName: protonmail
