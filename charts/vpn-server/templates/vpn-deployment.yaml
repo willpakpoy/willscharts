@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: vpn
+  name: vpn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: vpn
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: vpn
+    spec:
+      containers:
+        - image: hwdsl2/ipsec-vpn-server
+          name: ipsec-vpn-server
+          ports:
+            - containerPort: 500
+              protocol: UDP
+            - containerPort: 4500
+              protocol: UDP
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/ipsec.d
+              name: ikev2-vpn-data
+            - mountPath: /lib/modules
+              name: vpn-claim1
+              readOnly: true
+      hostname: ipsec-vpn-server
+      restartPolicy: Always
+      volumes:
+        - name: ikev2-vpn-data
+          persistentVolumeClaim:
+            claimName: ikev2-vpn-data
+        - name: vpn-claim1
+          persistentVolumeClaim:
+            claimName: vpn-claim1
+            readOnly: true
