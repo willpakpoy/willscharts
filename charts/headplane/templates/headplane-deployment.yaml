@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: headplane
+  name: headplane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: headplane
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: headplane
+    spec:
+      containers:
+        - image: ghcr.io/tale/headplane:latest
+          name: headplane
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/headplane/config.yaml
+              name: headplane-claim0
+            - mountPath: /var/lib/headplane
+              name: headplane-claim1
+      restartPolicy: Always
+      volumes:
+        - name: headplane-claim0
+          persistentVolumeClaim:
+            claimName: headplane-claim0
+        - name: headplane-claim1
+          persistentVolumeClaim:
+            claimName: headplane-claim1
